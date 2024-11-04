@@ -12,19 +12,15 @@ class ID_linkages():
     def __init__(self, df_names_): 
 
         self.df_names_ = df_names_
-        self.list_recipes = list(df_names_['Short Name'])
-        self.list_countries = list(df_names_['Country'])
+        self.list_recipes = list(df_names_['Recette'])
+        self.list_countries = list(df_names_['Pays'])
         #self.df_KnowCountries = 
 
         ################ IMPORTANT NOTES
         # Niger is Nigeria | Netherlands Antille is Netherlands | Jewish is not Israel | Åland Islands is Sweden
     
     def ID_list_shortKB(self, df_KnowCountries_):
-
-        """
-        This function takes recipes " short names" -- i.e Spinash lasagna = lasagna or Spaghetti Carbonara = Carbonara and identify all items in authentic recipes from their country to 
-        constitutes the DB
-        """
+        """This function takes recipes -- i.e Spinash lasagna = lasagna or Spaghetti Carbonara = Carbonara and identify all items in authentic recipes from their country to constitutes the DB"""
         
         df_names_2 = self.df_names_
         df_names_2["ids_ShortList"] = ""
@@ -76,10 +72,7 @@ class ID_linkages():
         return df_names_2
 
     def ID_list_longKB(self, df_KnowCountries_):
-
-        """
-        Same function but with all recipe of the same country with same name 
-        """
+        """Same function but with all recipe of the same country with same name """
         df_names_2 = self.df_names_
         df_names_2["ids_LongList"] = ""
 
@@ -102,7 +95,7 @@ class ID_linkages():
         
         return df_names_2
 
-    def train_variations(self, df_names_, df_train_)):
+    def train_variations(self, df_names_, df_train_):
     
         """
         Here we pick the variations froom the training data with a different country | We take the one from another country since all names in the same countries are the KB/EB
@@ -114,7 +107,7 @@ class ID_linkages():
             country = self.list_countries[i]
 
             #Here we study non local variqtions -- we pick all instances from different countries
-            df_variations = df_train_[df_train_['Country'] != country]
+            df_variations = df_train_[df_train_['countries'] != country]
             list_title = list(df_variations['title'])
             
             temp_ids = []
@@ -131,7 +124,7 @@ class ID_linkages():
 
         return df_names_
 
-    def test_variations(self, df_names_, df_variations, col_name='test_variations')):
+    def test_variations(self, df_names_, df_variations, col_name='test_variations'):
     
         """
         Here we pick the variations froom the test or validation data -- we don't care about the country of origin -- here we want all variations since we know they are not in the KB
