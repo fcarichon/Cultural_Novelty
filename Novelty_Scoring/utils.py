@@ -78,4 +78,54 @@ def new_distribution(Count_matrix, select_variation):
 
     return updated_Corpus_dist, Varations_dist
     
+def text_cleaning(ingredient_list):
 
+    clean_list = []
+    for i in range(len(ingredient_list)):
+        recipe_doc = nlp(str(ingredient_list[i]))
+        temp_list = []
+        for token in recipe_doc:
+            temp_list.append(token.lemma_.lower())
+        if len(temp_list) > 0:
+            clean_text = ' '.join(temp_list)
+            clean_list.append(clean_text)
+    return clean_list
+
+def get_info(index_list, recipe_dict, country_ref, index_name='Train_Variations'):
+    """Computing metadata for controling variables and mediation effects
+    """
+    country_list, ingr_list, same_country_ingr, diff_country_ingr = [], [], [], []
+    recipe_raw_len, recipe_clean_len, uniq_raw_words, uniq_clean_words = [], [], [], []
+    
+    for index in index_list:
+        temp_dict = recipe_dict[index_name][index]
+        country = temp_dict['country']
+        country_list.append(country)
+        ingr_list.append(ast.literal_eval(recipe_dict[index_name][index]['ingredient_list']))
+        
+        raw_recipe = ' '.join(recipe_dict[index_name][index]['recipe_raw'])
+        uniq_raw_words.append(len(set(raw_recipe.split())))
+        recipe_raw_len.append(len(raw_recipe.split()))
+        recipe_clean_len.append(len(recipe_dict[index_name][index]['recipe_clean'].split()))  ### type string
+        uniq_clean_words.append(len(set(recipe_dict[index_name][index]['recipe_clean'].split())))
+        
+        if country == country_ref:
+            same_country_ingr.extend(ast.literal_eval(recipe_dict[index_name][index]['ingredient_list']))
+        else:
+            diff_country_ingr.extend(ast.literal_eval(recipe_dict[index_name][index]['ingredient_list']))
+    
+    return country_list, ingr_list, recipe_raw_len, uniq_raw_words, recipe_clean_len, uniq_clean_words
+
+def get_new_ingr(var_ingr_list, ref_ingr_list): #same_country_list, diff_country_list, 
+    """
+    Getting the number of new ingredients between the new recipes and the KB
+    """
+    new_ingr_list = []
+    for list_ingredient in var_ingr_list:
+        new_ingr = 0
+        for ingredient in list_ingredient:
+            if ingredient not in ref_ingr_list:
+                new_ingr += 1
+        new_ingr_list.append(new_ingr)
+
+    return new_ingr_list

@@ -18,13 +18,13 @@ class Surprise():
     def __init__(self, pmi_new):
         self.pmi_new = pmi_new
         self.JS = Jensen_Shannon()
-
+        
     def get_common_vectors(self, dict_old, dict_new, epsilon):
         """ Input : nested dictionaries for each PMI collocations
         Ouput : list of tuples vectors for each words """
         variables_1 = dict_old['variables']
         variables_2 = dict_new['variables']
-        inter_list = list(set(variables_1 + variables_2))
+        inter_list = list(set(variables_1) & set(variables_2)) #list(set(variables_1 + variables_2))
 
         vectors = {}
         for entry in inter_list:
@@ -40,10 +40,10 @@ class Surprise():
         
         # Find tuples in list_1 but not in list_2 and exceed the threshold
         temp_known = [t[0] for t in pmi_known] ##  Useful to have only list of tuple not associated with their probbilities
-
         unique_tuples = [t for t in self.pmi_new if t[0] not in temp_known and t[1] > 0.]
-        count_unique = len(unique_tuples)
-        surprise_rate = count_unique / len(self.pmi_new)
+        
+        #count_unique = len(unique_tuples)
+        surprise_rate = len(unique_tuples) / (len(self.pmi_new)+1)
         
         new_suprise = 0
         if surprise_rate > thr_surp:
@@ -69,7 +69,7 @@ class Surprise():
             if sum(tuple_known) != 0 and sum(tuple_new) != 0:   #### We can't compare to non existing vectors neither
                 surprise_dists.append(self.JS.JSDiv(tuple_known, tuple_new))
     
-        surprise_score = sum(surprise_dists) / len(surprise_dists)
+        surprise_score = sum(surprise_dists) / (len(surprise_dists)+1)
         dist_surprise = 0
         if surprise_score > thr_surp:
             dist_surprise = 1
